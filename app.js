@@ -33,7 +33,7 @@ app.KeySender.sendKey = function(k)
 {
     if (this.socket !== null)
     {
-        this.socket.send(k);
+        this.socket.send(k + " ");
     }
     else
     {
