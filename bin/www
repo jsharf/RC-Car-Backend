@@ -30,6 +30,25 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 /**
+ * Add websocket to path /getKeyStream
+ */
+
+var WebSocketServer = require("ws").Server;
+var wss = new WebSocketServer({server: server});
+
+wss.on("connection", function(ws){
+    app.KeySender.socket = ws;
+    console.log("WS Connection Opened");
+    
+    ws.on("close", function ()
+    {
+        app.KeySender.socket = null;
+        console.log("WS Connection Closed");
+    });
+});
+
+
+/**
  * Normalize a port into a number, string, or false.
  */
 

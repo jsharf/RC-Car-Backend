@@ -1,6 +1,3 @@
-var net = require('net');
-var KEYSTREAMPORT = 3001;
-
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -29,14 +26,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 
-KeySender = {}
+app.KeySender = {}
 
-KeySender.socket = null;
-KeySender.sendKey = function(k)
+app.KeySender.socket = null;
+app.KeySender.sendKey = function(k)
 {
     if (this.socket !== null)
     {
-        this.socket.write(k + ",");
+        this.socket.send(k + ",");
     }
     else
     {
@@ -47,7 +44,7 @@ KeySender.sendKey = function(k)
 app.get('/sendKey', function(req, res)
         {
             console.log(req.query.key);
-            KeySender.sendKey(req.query.key);
+            app.KeySender.sendKey(req.query.key);
             res.send("Key " + req.query.key + " received");
         });
 
@@ -81,17 +78,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
-// setup keystream tcp server
-net.createServer(function(sock) {
-    console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort);
-    KeySender.socket = sock;
-
-    sock.on('close', function(data) {
-        console.log('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort);
-        KeySender.socket = null;
-    });
-
-}).listen(KEYSTREAMPORT);
 
 module.exports = app;
